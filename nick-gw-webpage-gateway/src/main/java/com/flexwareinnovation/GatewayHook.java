@@ -11,7 +11,6 @@ import com.inductiveautomation.ignition.common.util.LogUtil;
 import com.inductiveautomation.ignition.common.util.LoggerEx;
 import com.inductiveautomation.ignition.gateway.web.components.ConfigPanel;
 import com.inductiveautomation.ignition.gateway.web.models.ConfigCategory;
-import com.inductiveautomation.ignition.gateway.web.models.DefaultConfigTab;
 import com.inductiveautomation.ignition.gateway.web.models.IConfigTab;
 import com.inductiveautomation.ignition.gateway.web.models.KeyValue;
 
@@ -38,17 +37,11 @@ public class GatewayHook extends AbstractGatewayModuleHook {
         // Register GatewayHook.properties by registering the GatewayHook.class with BundleUtils
         BundleUtil.get().addBundle("NicksModule", getClass(), "NicksModule");
 
+        // test bundle loads properly by logging a string
+        logger.info("Module header: " + BundleUtil.get().getString("NicksModule.nav.header"));
+
         // Verify tables for persistent records if necessary
         verifySchema(context);
-
-        // create records if needed
-        maybeCreatePersonRecord(context, 0L, "Nick",
-                "Miller", true);
-
-        // get the settings records and do something with it...
-        PersonRecord theOneRecord = context.getLocalPersistenceInterface().find(PersonRecord.META, 0L);
-        logger.info("Firstname: " + theOneRecord.getFirstname());
-        logger.info("Lastname: " + theOneRecord.getLastname());
 
         // listen for updates to the settings record...
         PersonRecord.META.addRecordListener(
@@ -88,7 +81,7 @@ public class GatewayHook extends AbstractGatewayModuleHook {
      * This sets up the config panel
      */
     public static final ConfigCategory CONFIG_CATEGORY =
-            new ConfigCategory("PersonsConfiguration", "NicksModule.nav.header", 700);
+            new ConfigCategory("CoolPersons", "NicksModule.nav.header", 700);
 
 
     /**
@@ -97,18 +90,12 @@ public class GatewayHook extends AbstractGatewayModuleHook {
      * with the right-hand value returned from {@link ConfigPanel#getMenuLocation}. In this case name("homeconnect")
      * lines up with HCSettingsPage#getMenuLocation().getRight()
      */
-    public static final IConfigTab MY_CONFIG_ENTRY = DefaultConfigTab.builder()
-            .category(CONFIG_CATEGORY)
-            .name("NicksModule")
-            .i18n("NicksModule.nav.settings.title")
-            .page(SettingsPage.class)
-            .terms("home connect settings")
-            .build();
+
 
     @Override
     public List<? extends IConfigTab> getConfigPanels() {
         return Collections.singletonList(
-                MY_CONFIG_ENTRY
+                SettingsPage.MENU_ENTRY
         );
     }
 
